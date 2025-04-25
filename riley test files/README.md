@@ -1,50 +1,60 @@
-# 🏕️ Summer Camp Registration System
+🏕️ Summer Camp Registration System - Starter Guide
 
-This project is a Django-based web application for managing registrations, waitlists, and email communications for Regent University's summer camp program.
+Welcome! This project is a Django-based web app for managing summer camp registrations.
 
----
+----------------------------------------
+QUICK START INSTRUCTIONS
+----------------------------------------
 
-## ✅ How to Run the Project Locally
+1. Clone the Repository
+-------------------------
+git clone https://github.com/TrentenPodach/summercampsystemCSCI450.git
+cd summercampsystemCSCI450
 
-### 1. Open the Project in Visual Studio Code
-- Open **Visual Studio Code**
-- Select `File > Open Folder...`
-- Choose the folder named `Riley test files`
-- Make sure you see `manage.py` in the file tree
+2. Set Up the Project
+-------------------------
 
-### 2. Activate the Virtual Environment
-```bash
-.\env\Scripts\activate
-```
-You should see `(env)` in your terminal prompt after running the above command.
+If you are on Windows:
+- Run the file: winmake.bat
+- Choose:
+  1 → Setup
+  2 → Run the server
 
-### 3. Run the Django Server
-```bash
-python manage.py runserver
-```
-Once the server is running, open a browser and go to:  
-- [Admin Panel](http://127.0.0.1:8000/admin/)  
-- [Registration Page](http://127.0.0.1:8000/register/)
+If you are on Mac/Linux:
+- Use the terminal:
+  make setup
+  make run
 
----
+3. Open the Application
+-------------------------
+- Admin Panel: http://127.0.0.1:8000/admin/
+- Registration Page: http://127.0.0.1:8000/register/
 
-## 🔐 Default Admin Credentials
-- **Username:** riley  
-- **Password:** 1234
+Default Admin Login:
+- Username: riley
+- Password: 1234
 
-You can also create your own admin account:
-```bash
-python manage.py createsuperuser
-```
+----------------------------------------
+COMANDS
+----------------------------------------
 
----
+| Task                     | Windows Command     | Mac/Linux Command  |
+|---------------------------|----------------------|--------------------|
+| Setup environment         | winmake.bat → 1      | make setup         |
+| Run Django server         | winmake.bat → 2      | make run           |
+| Freeze dependencies       | winmake.bat → 3      | make freeze        |
+| Delete virtual environment| winmake.bat → 4      | make clean         |
 
-## 📝 Notes
-- The virtual environment must be activated each time you open a new terminal session.
-- If you get an error like `ModuleNotFoundError: No module named 'django'`, activate the virtual environment again.
-- All necessary files are already configured in the repo—no need to reinstall Django or start from scratch.
+----------------------------------------
+NOTES
+----------------------------------------
 
----
+- If you install new Python packages, update the requirements.txt by using the Freeze option.
+- Always activate your virtual environment if running Django manually:
+  - Windows: .\env\Scripts\activate
+  - Mac/Linux: source env/bin/activate
 
-Made by Trenten Podach, John Parker, and Riley Pence  
-[GitHub Repo](https://github.com/TrentenPodach/summercampsystemCSCI450)
+----------------------------------------
+
+Created by: Trenten Podach, John Parker, and Riley Pence
+GitHub Repo: https://github.com/TrentenPodach/summercampsystemCSCI450
