@@ -1,4 +1,4 @@
-🏕️ Summer Camp Registration System - Starter Guide
+fd🏕️ Summer Camp Registration System - Starter Guide
 
 Welcome! This project is a Django-based web app for managing summer camp registrations.
 

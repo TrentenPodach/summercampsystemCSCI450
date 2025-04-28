@@ -1,5 +1,8 @@
 from django.shortcuts import render, redirect
-from .forms import FamilyForm, IndividualForm
+from .forms import FamilyForm, IndividualForm, LoginForm
+from django.contrib.auth import login
+from django.http import HttpResponse
+from django.contrib.auth.forms import AuthenticationForm
 
 def register(request):
     if request.method == 'POST':
@@ -35,3 +38,16 @@ def register(request):
 
 def registration_success(request):
     return render(request, 'campreg/success.html')
+
+
+
+def login_view(request):
+    if request.method == "POST":
+        login_form = AuthenticationForm(data=request.POST)
+        if login_form.is_valid():
+            login(request, login_form.get_user())
+            return redirect('register') #Temporarily using 'register' since that is the only other finished non-admin page
+        
+    else:
+        login_form = AuthenticationForm()
+    return render(request, "campreg/login.html", {"login_form": login_form})

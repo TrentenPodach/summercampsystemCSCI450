@@ -1,0 +1,18 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+Account Login
+{% endblock %}
+
+{% block header %}
+Account Login
+{% endblock %}
+
+{% block content %}
+<form method="post">
+  {% csrf_token %}
+  {{ login_form.as_p }}
+  
+  <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+{% endblock %}
