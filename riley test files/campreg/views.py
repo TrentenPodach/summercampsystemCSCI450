@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from .forms import FamilyForm, IndividualForm, LoginForm
 from django.contrib.auth import login
 from django.http import HttpResponse
-from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 
 def register(request):
     if request.method == 'POST':
@@ -34,20 +34,25 @@ def register(request):
         'family_form': family_form
     })
 
-
-
 def registration_success(request):
     return render(request, 'campreg/success.html')
 
+# def user_register_view(request):
+#     if request.method == "POST":
+#         register_form = UserCreationForm(request.POST)
+#         if register_form.is_valid():
+#             login(request, register_form.save())
+#             return redirect('register')
+#     else:
+#         register_form = UserCreationForm()
+#     return render(request, "campreg/userregister.html", { "register_form": register_form })
 
-
-def login_view(request):
-    if request.method == "POST":
-        login_form = AuthenticationForm(data=request.POST)
-        if login_form.is_valid():
-            login(request, login_form.get_user())
-            return redirect('register') #Temporarily using 'register' since that is the only other finished non-admin page
-        
-    else:
-        login_form = AuthenticationForm()
-    return render(request, "campreg/login.html", {"login_form": login_form})
+# def login_view(request):
+#     if request.method == "POST":
+#         login_form = AuthenticationForm(data=request.POST)
+#         if login_form.is_valid():
+#             login(request, login_form.get_user())
+#             return redirect('register') #Temporarily using 'register' since that is the only other finished non-admin page
+#     else:
+#         login_form = AuthenticationForm()
+#     return render(request, "campreg/login.html", {"login_form": login_form})

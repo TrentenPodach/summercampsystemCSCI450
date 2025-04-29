@@ -11,6 +11,7 @@
     {% load bootstrap5 %}
     {% bootstrap_css %}
     {% bootstrap_javascript %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body>
 <div class="container-fluid bg-light">
@@ -20,21 +21,35 @@
                 <img src="{% static 'images/regent.png' %}" height="30" width="30">
                 Regent Summer Camps
             </a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarBar" aria-controls="navbarBar" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav">
+            <div class="collapse navbar-collapse" id="navbarBar">
+                <ul class="navbar-nav mb-2 mb-lg-0">
                     <li class="nav-item">
                         <a class="nav-link" href="#">Home</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/register">Register</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/login">Login</a>
+                </ul>
+                <ul class="navbar-nav ms-auto">
+                    {% if user.is_authenticated %}
+                    <li class="navbar-text me-2">
+                         Logged in as {{ user.get_username }}
                     </li>
-                <ul>
+                    <li class="nav-item">
+                        <form class="form" action="{% url 'users:logout' %}" method="post">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-outline-danger" aria-label="Logout" title="Logout">Logout</button>
+                        </form>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="/users/login">Login</a>
+                    </li>
+                    {% endif %}
+                </ul>
             </div>
         </nav>
     </div>
