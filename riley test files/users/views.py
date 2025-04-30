@@ -1,9 +1,46 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
-from .forms import CreateUserForm, CreateLoginForm
+from .forms import CreateUserForm, CreateLoginForm, CreateFamilyEditForm
+from campreg.forms import IndividualForm
+from campreg.models import Individual, Family
 
 # Create your views here.
+
+def account_view(request):
+    account = request.user
+    #individual_form = IndividualForm(instance=account)
+    #accountFam = Family.objects.get(id=user_id)
+    #family_edit_form = CreateFamilyEditForm(id=user_id)
+
+
+    if request.method == 'POST':
+        individual_form = IndividualForm(request.POST, instance=account)
+        #family_edit_form = CreateFamilyEditForm(request.POST)
+
+        #print("POST DATA:", request.POST)
+
+        if individual_form.is_valid(): #and family_edit_form.is_valid():
+            print("Forms are valid")
+            individual_form.save()
+            return redirect("home")
+            #Save the data
+
+        else:
+            print("Errors:")
+            print(individual_form.errors)
+            #print(family_edit_form.errors)
+    else:
+        individual_form = IndividualForm(instance=account)
+        #family_edit_form = CreateFamilyEditForm()
+
+    return render(request, 'users/account.html', {
+        'individual_form': individual_form,
+        #'family_form': family_edit_form
+    })
+
+def registration_success(request):
+    return render(request, 'campreg/success.html')
 
 def register_view(request):
     if request.method == "POST":

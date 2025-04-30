@@ -1,0 +1,18 @@
+{% extends 'layout.html' %}
+
+{% block header %}
+Account and Family Details
+{% endblock %}
+
+{% block content %}
+<form method="post">
+  {% csrf_token %}
+  <h3>Account</h3>
+  {{ individual_form.as_p }}
+  
+  <h3>Family Info</h3>
+  {{ family_form.as_p }}
+  
+  <button type="submit" class="btn btn-primary">Save Changes</button>
+</form>
+{% endblock %}

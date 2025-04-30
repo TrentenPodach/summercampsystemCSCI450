@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from campreg.models import Individual, Family
 
 class CreateLoginForm(AuthenticationForm):
 
@@ -25,3 +26,8 @@ class CreateUserForm(UserCreationForm):
         self.fields['username'].widget.attrs['class'] = 'form-control'
         self.fields['password1'].widget.attrs['class'] = 'form-control'
         self.fields['password2'].widget.attrs['class'] = 'form-control'
+
+class CreateFamilyEditForm(forms.ModelForm):
+    class Meta:
+        model = Family
+        fields =['primary_contact', 'members']

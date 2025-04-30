@@ -3,7 +3,12 @@ from .forms import FamilyForm, IndividualForm, LoginForm
 from django.contrib.auth import login
 from django.http import HttpResponse
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
+from django.contrib.auth.decorators import login_required
 
+def home(request):
+    return render(request, 'campreg/home.html')
+
+@login_required(login_url="/users/login/")
 def register(request):
     if request.method == 'POST':
         individual_form = IndividualForm(request.POST)
@@ -36,6 +41,8 @@ def register(request):
 
 def registration_success(request):
     return render(request, 'campreg/success.html')
+
+
 
 # def user_register_view(request):
 #     if request.method == "POST":
