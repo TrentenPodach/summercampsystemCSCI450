@@ -30,4 +30,4 @@ class CreateUserForm(UserCreationForm):
 class CreateFamilyEditForm(forms.ModelForm):
     class Meta:
         model = Family
-        fields =['primary_contact', 'members']
+        fields = ['primary_contact', 'members']

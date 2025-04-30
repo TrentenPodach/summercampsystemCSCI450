@@ -4,11 +4,10 @@
 Registration for Summer Camp
 {% endblock %}
 
-{% block header %}
-Summer Camp Registration Form
-{% endblock %}
-
 {% block content %}
+<div class="shadow p-4 mb-5 bg-body rounded">
+<h1>Summer Camp Registration Form</h1>
+</br>
 <form method="post">
   {% csrf_token %}
   <h3>Primary Contact Info</h3>
@@ -19,4 +18,5 @@ Summer Camp Registration Form
   
   <button type="submit" class="btn btn-primary">Submit</button>
 </form>
+</div>
 {% endblock %}

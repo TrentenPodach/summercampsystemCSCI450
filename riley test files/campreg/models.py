@@ -20,6 +20,7 @@ class Family(models.Model):
 
 class Account(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    date_of_birth = models.DateField()
     family = models.OneToOneField(Family, on_delete=models.CASCADE)
 
     def __str__(self):

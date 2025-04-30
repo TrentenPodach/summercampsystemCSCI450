@@ -1,11 +1,82 @@
+body {
+    min-height: 100vh;
+    background-image: linear-gradient(#047138, #094627);
+}
+
+h1, h3, label {
+    color: #062f6d;
+}
+
 label {
     font-weight: 600;
     font-size: large;
-    color:black;
+}
+
+.navbar-regent .nav-link {
+    color: #062f6d;
+    font-weight: 500;
+    transition: color .15s ease-in-out;
+}
+
+.navbar-regent .nav-link:hover {
+    color: #3e639c;
+}
+
+.navbar-regent .navbar-brand {
+    color: #062f6d;
+}
+
+.navbar-regent .navbar-text {
+    color: #062f6d;
+}
+
+.green-link {
+    color:#047138
+}
+
+.green-link:hover {
+    color:#0a9c51
+}
+
+.btn {
+    background-color: #062f6d;
+    border-color: #062f6d;
+    transition: all .15s ease-in-out;
+}
+
+.btn:hover {
+    background-color: #3e639c;
+    border-color: #3e639c;
+}
+
+.btn-logout {
+    color: var(--bs-danger);
+    border-color: var(--bs-danger);
+    background-color: transparent;
+    transition: all .15s ease-in-out;
+}
+
+.btn-logout:hover {
+    color: white;
+    background-color: var(--bs-danger);
+    border-color: var(--bs-danger);
 }
 
 .errorlist {
     color: #F00;
+}
+
+.form-control {
+    max-width: 300px;
+}
+
+.shadow {
+    width: 50%;
+}
+
+.container-fullwidth {
+    width: 100%;
+    margin: 0;
 }
 
 .helptext {

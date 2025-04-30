@@ -1,10 +1,9 @@
 {% extends 'layout.html' %}
 
-{% block header %}
-Account and Family Details
-{% endblock %}
-
 {% block content %}
+<div class="shadow p-4 mb-5 bg-body rounded">
+<h1>Account and Family Details</h1>
+</br>
 <form method="post">
   {% csrf_token %}
   <h3>Account</h3>
@@ -15,4 +14,5 @@ Account and Family Details
   
   <button type="submit" class="btn btn-primary">Save Changes</button>
 </form>
+</div>
 {% endblock %}

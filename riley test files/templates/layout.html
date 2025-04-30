@@ -14,9 +14,10 @@
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body>
-<div class="container-fluid bg-light">
-    <div class="container mx-2">
-        <nav class="navbar navbar-expand-lg navbar-light">
+<section class="bg-col">
+<div class="container-fluid container-fullwidth bg-light">
+    <div class="container-fluid mx-2">
+        <nav class="navbar navbar-expand-lg navbar-regent">
             <a class="navbar-brand mb-0 h1" href="/home">
                 <img src="{% static 'images/regent.png' %}" height="30" width="30">
                 Regent Summer Camps
@@ -46,7 +47,7 @@
                     <li class="nav-item">
                         <form class="form" action="{% url 'users:logout' %}" method="post">
                             {% csrf_token %}
-                            <button type="submit" class="btn btn-outline-danger" aria-label="Logout" title="Logout">Logout</button>
+                            <button type="submit" class="btn btn-logout" aria-label="Logout" title="Logout">Logout</button>
                         </form>
                     </li>
                     {% else %}
@@ -59,15 +60,12 @@
         </nav>
     </div>
 </div>
-<div class = "container mt-3 mx-5">
-    <p class="h1">
-    {% block header %}
-    {% endblock %}
-    </p>
-    <div class = "container-fluid mt-3 mx-0">
+<div class = "container-fluid container-fullwidth mt-3">
+    <div class = "col d-flex justify-content-center">
         {% block content %}
         {% endblock %}
     </div>
 </div>
+</section>
 </body>
 </html>
