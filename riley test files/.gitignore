@@ -1,2 +1,4 @@
 # Virtual environment
 env/
+db.sqlite3
+_pycache_/
