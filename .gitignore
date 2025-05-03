@@ -2,3 +2,6 @@
 env/
 db.sqlite3
 __pycache__/
+/riley test files/summer_camp/__pycache__
+/riley test files/campreg/migrations/__pycache__
+/riley test files/campreg/__pycache__

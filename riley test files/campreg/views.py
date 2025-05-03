@@ -34,7 +34,7 @@ def register(request):
         individual_form = IndividualForm()
         family_form = FamilyForm()
 
-    return render(request, 'campreg/register.html', {
+    return render(request, 'campreg/camp_register.html', {
         'individual_form': individual_form,
         'family_form': family_form
     })
@@ -43,23 +43,34 @@ def registration_success(request):
     return render(request, 'campreg/success.html')
 
 
+def user_register_view(request):
+    if request.method == "POST":
+        register_form = UserCreationForm(request.POST)
+        if register_form.is_valid():
+            user = register_form.save()
+            login(request, user)
+            messages.success(request, "Account created successfully.")
+            return redirect('home')
+    else:
+        register_form = UserCreationForm()
+    return render(request, "campreg/userregister.html", { "register_form": register_form })
 
-# def user_register_view(request):
-#     if request.method == "POST":
-#         register_form = UserCreationForm(request.POST)
-#         if register_form.is_valid():
-#             login(request, register_form.save())
-#             return redirect('register')
-#     else:
-#         register_form = UserCreationForm()
-#     return render(request, "campreg/userregister.html", { "register_form": register_form })
+def login_view(request):
+    if request.method == "POST":
+        login_form = AuthenticationForm(data=request.POST)
+        if login_form.is_valid():
+            login(request, login_form.get_user())
+            messages.success(request, "Logged in successfully.")
+            return redirect('home')
+    else:
+        login_form = AuthenticationForm()
+    return render(request, "campreg/login.html", {"login_form": login_form})
 
-# def login_view(request):
-#     if request.method == "POST":
-#         login_form = AuthenticationForm(data=request.POST)
-#         if login_form.is_valid():
-#             login(request, login_form.get_user())
-#             return redirect('register') #Temporarily using 'register' since that is the only other finished non-admin page
-#     else:
-#         login_form = AuthenticationForm()
-#     return render(request, "campreg/login.html", {"login_form": login_form})
+def logout_view(request):
+    if request.method == "POST":
+        logout(request)
+        messages.info(request, "You have been logged out.")
+        return redirect('home')
+    return redirect('home')
+
+

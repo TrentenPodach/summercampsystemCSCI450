@@ -14,6 +14,17 @@
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body>
+
+    {% if messages %}
+<div class="container mt-3">
+  {% for message in messages %}
+  <div class="alert alert-{{ message.tags }}">
+    {{ message }}
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
 <section class="bg-col">
 <div class="container-fluid container-fullwidth bg-light">
     <div class="container-fluid mx-2">
@@ -30,9 +41,15 @@
                     <li class="nav-item">
                         <a class="nav-link" href="/home">Home</a>
                     </li>
+                    {% if user.is_authenticated %}
                     <li class="nav-item">
-                        <a class="nav-link" href="/register">Register</a>
+                         <a class="nav-link" href="/camp/register">Camp Registration</a>
                     </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="/users/register">Sign Up</a>
+                    </li>
+                    {% endif %}
                     {%if user.is_authenticated%}
                     <li class="nav-item">
                         <a class="nav-link" href="/users/account">Account</a>
