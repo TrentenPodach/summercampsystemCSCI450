@@ -4,6 +4,8 @@ from django.contrib.auth import login
 from django.http import HttpResponse
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth.decorators import login_required
+from django.core.mail import send_mail
+from django.conf import settings
 
 def home(request):
     return render(request, 'campreg/home.html')
@@ -19,11 +21,15 @@ def register(request):
         if individual_form.is_valid() and family_form.is_valid():
             print("Forms are valid")
 
+            user_email = individual_form.cleaned_data["email"]
+
             primary = individual_form.save()
             family = family_form.save(commit=False)
             family.primary_contact = primary
             family.save()
             family.members.add(primary)
+         
+            send_mail("Regent Summer Camp Registration Confirmation","Your application to participate in the Regent University Summer Camp has been approved. \nFor more information, visit 127.0.0.1:8000/home", settings.EMAIL_HOST_USER,[user_email])
 
             return redirect('registration_success')
         else:

@@ -4,6 +4,8 @@ from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from .forms import CreateUserForm, CreateLoginForm, CreateFamilyEditForm
 from campreg.forms import IndividualForm
 from campreg.models import Individual, Family
+from django.core.mail import send_mail
+from django.conf import settings
 
 # Create your views here.
 
@@ -46,7 +48,14 @@ def register_view(request):
     if request.method == "POST":
         register_form = CreateUserForm(request.POST)
         if register_form.is_valid():
+            #account = request.user
+            user_email = register_form.cleaned_data["email"]
+            print("Before save.")
             login(request, register_form.save())
+            print("Sending email...")           
+            send_mail("Regent Summer Camp Registration Confirmation","Your application to participate in the Regent University Summer Camp has been approved. \nFor more information, visit 127.0.0.1:8000/home", settings.EMAIL_HOST_USER,[user_email])
+            print("Email sent!")
+
             return redirect('register')
     else:
         register_form = CreateUserForm()
@@ -58,6 +67,7 @@ def login_view(request):
         if login_form.is_valid():
             login(request, login_form.get_user())
             return redirect('register') #Temporarily using 'register' since that is the only other finished non-admin page
+            
     else:
         login_form = CreateLoginForm()
     return render(request, "users/login.html", {"login_form": login_form})
