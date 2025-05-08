@@ -11,6 +11,18 @@ class IndividualForm(forms.ModelForm):
         model = Individual
         fields = ['first_name', 'last_name', 'date_of_birth', 'email']
 
+class PrimaryContactForm(IndividualForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Make the email field required and customize the error message
+        self.fields['email'].required = True
+        self.fields['email'].widget.attrs.update({
+            'required': 'required',
+            'oninvalid': "this.setCustomValidity('Please enter an email for the primary contact.')",
+            'oninput': "this.setCustomValidity('')"
+        })
+
+
 class FamilyForm(forms.ModelForm):
     family_name = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'class':'form-control'}))
     class Meta:

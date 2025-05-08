@@ -6,17 +6,65 @@ Registration for Summer Camp
 
 {% block content %}
 <div class="shadow p-4 mb-5 bg-body rounded">
-<h1>Summer Camp Registration Form</h1>
-</br>
-<form method="post">
-  {% csrf_token %}
-  <h3>Primary Contact Info</h3>
-  {{ individual_form.as_p }}
-  
-  <h3>Family Info</h3>
-  {{ family_form.as_p }}
-  
-  <button type="submit" class="btn btn-primary">Submit</button>
-</form>
+  <h1>Summer Camp Registration Form</h1>
+  <form method="post">
+    {% csrf_token %}
+
+    <h3>Primary Contact Info <small class="text-danger">(email required)</small></h3>
+    {{ individual_form.as_p }}
+
+    <h3>Family Info</h3>
+    {{ family_form.as_p }}
+
+    <h3>Children</h3>
+    <div id="children-container">
+      <!-- Child fields will be inserted here -->
+    </div>
+
+    <button type="button" class="btn btn-secondary my-2" onclick="addChild()">+ Add Child</button>
+    <br>
+    <button type="submit" class="btn btn-primary mt-3">Submit</button>
+  </form>
 </div>
+
+<script>
+  let childCount = 0;
+  
+  function addChild() {
+    const container = document.getElementById('children-container');
+  
+    const childDiv = document.createElement('div');
+    childDiv.classList.add('border', 'p-3', 'mb-3', 'position-relative');
+    childDiv.innerHTML = `
+      <button type="button" class="btn-close position-absolute top-0 end-0 m-2" aria-label="Close" onclick="window.removeChild(this)"></button>
+      <div class="mb-2">
+        <label>First Name</label>
+        <input type="text" name="child_${childCount}_first_name" class="form-control" required>
+      </div>
+      <div class="mb-2">
+        <label>Last Name</label>
+        <input type="text" name="child_${childCount}_last_name" class="form-control" required>
+      </div>
+      <div class="mb-2">
+        <label>Date of Birth</label>
+        <input type="date" name="child_${childCount}_dob" class="form-control" required>
+      </div>
+      <div class="mb-2">
+        <label>Email (optional)</label>
+        <input type="email" name="child_${childCount}_email" class="form-control">
+      </div>
+    `;
+    container.appendChild(childDiv);
+    childCount++;
+  }
+  
+  // Expose removeChild globally
+  window.removeChild = function(button) {
+    const childDiv = button.closest('.border');
+    if (childDiv) {
+      childDiv.remove();
+    }
+  }
+  </script>
+  
 {% endblock %}
