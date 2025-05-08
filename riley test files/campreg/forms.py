@@ -1,5 +1,5 @@
 from django import forms
-from .models import Individual, Family, User
+from .models import Individual, Family, User, Camp
 
 class IndividualForm(forms.ModelForm):
     first_name = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'class':'form-control'}))
@@ -29,6 +29,13 @@ class FamilyForm(forms.ModelForm):
         model = Family
         # Don't show primary_contact or members in the form
         exclude = ['primary_contact', 'members']
+
+class CampChoiceForm(forms.Form):
+    camp = forms.ModelChoiceField(
+        queryset=Camp.objects.all(),
+        empty_label="Select a camp",
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
 
 class LoginForm(forms.ModelForm):
     password = forms.CharField(label="Password", widget=forms.PasswordInput)
