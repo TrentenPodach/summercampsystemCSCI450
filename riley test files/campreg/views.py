@@ -20,24 +20,26 @@ def register(request):
         camp_form = CampChoiceForm(request.POST)
 
         if individual_form.is_valid() and family_form.is_valid() and camp_form.is_valid():
-            user_email = individual_form.cleaned_data["email"]
+            selected_camp = camp_form.cleaned_data['camp']
 
-            # Save the primary contact
-            primary = individual_form.save()
+            # Save primary contact
+            primary = individual_form.save(commit=False)
+            primary.user = request.user  # 🔗 Link to logged-in user
+            primary.save()
 
-            # Save the family
+            # Create and save family
             family = family_form.save(commit=False)
             family.primary_contact = primary
             family.save()
+            family.members.clear()
             family.members.add(primary)
 
-            # Save children
+            # === Process children ===
             child_index = 0
             while True:
                 prefix = f"child_{child_index}_"
-                key = prefix + "first_name"
-                if key not in request.POST:
-                    break  # No more children
+                if not request.POST.get(prefix + "first_name"):
+                    break
 
                 first = request.POST.get(prefix + "first_name")
                 last = request.POST.get(prefix + "last_name")
@@ -56,37 +58,29 @@ def register(request):
 
                 child_index += 1
 
-            # Enroll or waitlist
-            selected_camp = camp_form.cleaned_data["camp"]
-            if selected_camp.registered_families.count() < selected_camp.max_capacity:
-                selected_camp.registered_families.add(family)
-                camp_status = "registered"
-            else:
-                WaitingList.objects.create(family=family, camp=selected_camp)
-                camp_status = "waitlisted"
-            '''
-            # Send confirmation email
-           if selected_camp.registered_families.count() < selected_camp.max_capacity:
-                selected_camp.registered_families.add(family)
+            # Count how many individuals are already registered in the camp (excluding primary contacts)
+            current_total = sum(
+                f.members.exclude(id=f.primary_contact.id).count()
+                for f in selected_camp.registered_families.all()
+            )
 
-                send_mail(
-                    "Regent Summer Camp Registration Confirmation",
-                    "Your registration for the Regent University Summer Camp has been confirmed!\n\nVisit 127.0.0.1:8000/home for details.",
-                    settings.EMAIL_HOST_USER,
-                    [user_email]
-                )
-            else:
-                WaitingList.objects.create(family=family, camp=selected_camp)
+            # Count how many individuals are being registered now (excluding primary contact)
+            registering_now = family.members.exclude(id=family.primary_contact.id).count()
 
-                send_mail(
-                    "Regent Summer Camp Waitlist Notification",
-                    "The camp you selected is currently full, and you have been added to the waitlist.\n\nWe will notify you if a spot becomes available.",
-                    settings.EMAIL_HOST_USER,
-                   [user_email]
-                )
-            '''
+            if current_total + registering_now <= selected_camp.max_capacity:
+                selected_camp.registered_families.add(family)
+                print(f"Registered {family} to {selected_camp.name}")
+            else:
+                # Avoid duplicate waitlist entries
+                existing_wait = WaitingList.objects.filter(family=family, camp=selected_camp).first()
+                if not existing_wait:
+                    WaitingList.objects.create(family=family, camp=selected_camp)
+                    print(f"{family} added to waitlist for {selected_camp.name}")
+                else:
+                    print(f"{family} already on waitlist for {selected_camp.name}")
 
             return redirect('registration_success')
+
         else:
             print("Form errors:", individual_form.errors, family_form.errors, camp_form.errors)
     else:

@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 
 class Individual(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     date_of_birth = models.DateField()
@@ -20,7 +21,7 @@ class Family(models.Model):
 
 class Account(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    date_of_birth = models.DateField()
+    #date_of_birth = models.DateField() temp removal
     family = models.OneToOneField(Family, on_delete=models.CASCADE)
 
     def __str__(self):

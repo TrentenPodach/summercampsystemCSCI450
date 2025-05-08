@@ -6,40 +6,40 @@ from campreg.forms import IndividualForm
 from campreg.models import Individual, Family
 from django.core.mail import send_mail
 from django.conf import settings
+from campreg.models import Camp, WaitingList
 
 # Create your views here.
 
 def account_view(request):
-    account = request.user
-    #individual_form = IndividualForm(instance=account)
-    #accountFam = Family.objects.get(id=user_id)
-    #family_edit_form = CreateFamilyEditForm(id=user_id)
+    user = request.user
 
+    try:
+        individual = Individual.objects.get(user=user)
+        family = Family.objects.get(primary_contact=individual)
+    except (Individual.DoesNotExist, Family.DoesNotExist):
+        individual = None
+        family = None
 
     if request.method == 'POST':
-        individual_form = IndividualForm(request.POST, instance=account)
-        #family_edit_form = CreateFamilyEditForm(request.POST)
-
-        #print("POST DATA:", request.POST)
-
-        if individual_form.is_valid(): #and family_edit_form.is_valid():
-            print("Forms are valid")
+        individual_form = IndividualForm(request.POST, instance=individual)
+        if individual_form.is_valid():
             individual_form.save()
             return redirect("home")
-            #Save the data
-
-        else:
-            print("Errors:")
-            print(individual_form.errors)
-            #print(family_edit_form.errors)
     else:
-        individual_form = IndividualForm(instance=account)
-        #family_edit_form = CreateFamilyEditForm()
+        individual_form = IndividualForm(instance=individual)
+
+    members = family.members.exclude(id=family.primary_contact.id) if family else []
+    registered_camps = Camp.objects.filter(registered_families=family) if family else []
+    waitlisted_camps = WaitingList.objects.filter(family=family) if family else []
 
     return render(request, 'users/account.html', {
         'individual_form': individual_form,
-        #'family_form': family_edit_form
+        'family': family,
+        'members': members,
+        'registered_camps': registered_camps,
+        'waitlisted_camps': waitlisted_camps
     })
+
 
 def registration_success(request):
     return render(request, 'campreg/success.html')

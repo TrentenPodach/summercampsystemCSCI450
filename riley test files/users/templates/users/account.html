@@ -2,17 +2,46 @@
 
 {% block content %}
 <div class="shadow p-4 mb-5 bg-body rounded">
-<h1>Account and Family Details</h1>
-</br>
-<form method="post">
-  {% csrf_token %}
-  <h3>Account</h3>
-  {{ individual_form.as_p }}
-  
-  <h3>Family Info</h3>
-  {{ family_form.as_p }}
-  
-  <button type="submit" class="btn btn-primary">Save Changes</button>
-</form>
+  <h1>Account and Family Details</h1>
+  <br>
+  <form method="post">
+    {% csrf_token %}
+    <h3>Primary Contact Info</h3>
+    {{ individual_form.as_p }}
+    <button type="submit" class="btn btn-primary">Save Changes</button>
+  </form>
+
+  {% if family %}
+    <hr>
+    <h3>Family Name:</h3>
+    <p>{{ family.family_name }}</p>
+
+    <h3>Family Members:</h3>
+    <ul>
+      {% for member in members %}
+        <li>{{ member.first_name }} {{ member.last_name }} (DOB: {{ member.date_of_birth }})</li>
+      {% empty %}
+        <li>No additional members.</li>
+      {% endfor %}
+    </ul>
+
+    <h3>Registered Camps:</h3>
+    <ul>
+      {% for camp in registered_camps %}
+        <li>{{ camp.name }} ({{ camp.start_date }} to {{ camp.end_date }})</li>
+      {% empty %}
+        <li>Not registered in any camp.</li>
+      {% endfor %}
+    </ul>
+
+    <h3>Waitlisted Camps:</h3>
+    <ul>
+      {% for wait in waitlisted_camps %}
+        <li>{{ wait.camp.name }} (Waitlisted on {{ wait.date_added|date:"Y-m-d H:i" }})</li>
+      {% empty %}
+        <li>Not on any waitlists.</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
 </div>
 {% endblock %}
