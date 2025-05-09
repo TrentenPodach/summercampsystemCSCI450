@@ -28,6 +28,21 @@
     </form>
   </div>
 
+  <!-- Add Post Button -->
+<button class="btn btn-outline-primary btn-sm mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#newPostForm" aria-expanded="false" aria-controls="newPostForm">
+  + Add New Post
+</button>
+
+<!-- Collapsible Post Form -->
+<div class="collapse mb-4" id="newPostForm">
+  <form method="post" action="{% url 'staff:add_camp_post' camp.id %}">
+    {% csrf_token %}
+    {{ post_form.as_p }}
+    <button type="submit" class="btn btn-success">Post</button>
+  </form>
+</div>
+
+
   <p><strong>Dates:</strong> {{ camp.start_date }} – {{ camp.end_date }}</p>
   <p><strong>Capacity:</strong> {{ camp.max_capacity }}</p>
   <p><strong>Enrolled:</strong> {{ families|length }} families</p>

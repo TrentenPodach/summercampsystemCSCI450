@@ -3,7 +3,9 @@ from django.contrib.auth.decorators import user_passes_test
 from campreg.models import Camp, Family, WaitingList
 from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
-from .forms import CampForm
+from .forms import CampForm, CampPostForm, CampPost
+
+
 
 # Step 5: Custom check to allow only staff
 def is_staff(user):
@@ -53,13 +55,15 @@ def view_camp(request, camp_id):
         entry.child_count = children.count()
 
     total_children = sum(family.children.count() for family in families)
+    post_form = CampPostForm()
 
     return render(request, 'staff/camp_overview.html', {
         'camp': camp,
         'families': families,
         'waitlisted': waitlisted,
-        'total_children': total_children,
+        'post_form': post_form
     })
+
 
 
 @user_passes_test(is_staff)
@@ -101,18 +105,6 @@ def remove_family_from_camp(request, camp_id, family_id):
     return redirect('staff:camp_overview', camp_id=camp.id)
 
 @user_passes_test(is_staff)
-def create_camp(request):
-    if request.method == 'POST':
-        form = CampForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('staff:dashboard')
-    else:
-        form = CampForm()
-    
-    return render(request, 'staff/create_camp.html', {'form': form})
-
-@user_passes_test(is_staff)
 def archive_camp(request, camp_id):
     camp = get_object_or_404(Camp, id=camp_id)
 
@@ -132,3 +124,54 @@ def unarchive_camp(request, camp_id):
     
     return redirect('staff:camp_overview', camp_id=camp.id)
 
+@user_passes_test(is_staff)
+def create_camp(request):
+    if request.method == 'POST':
+        camp_form = CampForm(request.POST)
+        post_form = CampPostForm(request.POST)
+
+        if camp_form.is_valid() and post_form.is_valid():
+            camp = camp_form.save()
+
+            # Save post only if title or content provided
+            if post_form.cleaned_data['title'] or post_form.cleaned_data['content']:
+                post = post_form.save(commit=False)
+                post.camp = camp
+                post.save()
+
+            return redirect('staff:dashboard')
+    else:
+        camp_form = CampForm()
+        post_form = CampPostForm()
+
+    return render(request, 'staff/create_camp.html', {
+        'camp_form': camp_form,
+        'post_form': post_form
+    })
+
+@user_passes_test(is_staff)
+def add_camp_post(request, camp_id):
+    camp = get_object_or_404(Camp, id=camp_id)
+
+    if request.method == 'POST':
+        form = CampPostForm(request.POST)
+        if form.is_valid():
+            post = form.save(commit=False)
+            post.camp = camp
+            post.save()
+            return redirect('staff:camp_overview', camp_id=camp.id)
+    else:
+        form = CampPostForm()
+
+    return render(request, 'staff/add_post.html', {'form': form, 'camp': camp})
+
+@user_passes_test(lambda u: u.is_staff)
+def delete_camp_post(request, post_id):
+    post = get_object_or_404(CampPost, id=post_id)
+    camp_id = post.camp.id
+
+    if request.method == 'POST':
+        post.delete()
+        return redirect('home')  # or redirect to camp_overview if needed
+
+    return redirect('home')

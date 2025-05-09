@@ -16,4 +16,6 @@ urlpatterns = [
     path('camp/create/', views.create_camp, name='create_camp'),
     path('camp/<int:camp_id>/archive/', views.archive_camp, name='archive_camp'),
     path('camp/<int:camp_id>/unarchive/', views.unarchive_camp, name='unarchive_camp'),
+    path('camp/<int:camp_id>/add-post/', views.add_camp_post, name='add_camp_post'),
+    path('post/<int:post_id>/delete/', views.delete_camp_post, name='delete_camp_post'),
 ]

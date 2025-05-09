@@ -11,7 +11,17 @@ from django.shortcuts import get_object_or_404
 from django.contrib import messages
 
 def home(request):
-    return render(request, 'campreg/home.html')
+    camps = Camp.objects.filter(archived=False).order_by('start_date')
+
+    for camp in camps:
+        camp.enrolled = sum(
+            f.members.exclude(id=f.primary_contact.id).count()
+            for f in camp.registered_families.all()
+        )
+        camp.waitlist_count = WaitingList.objects.filter(camp=camp).count()
+
+    return render(request, 'campreg/home.html', {'camps': camps})
+
 
 @login_required(login_url="/users/login/")
 def register(request):

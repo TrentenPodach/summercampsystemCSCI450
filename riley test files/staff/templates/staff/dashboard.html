@@ -38,7 +38,7 @@
           <td>{{ camp.waitlisted_children }}</td>
           <td>{{ camp.available_spots }} / {{ camp.max_capacity }}</td>
           <td>
-            <a href="{% url 'staff:camp_overview' camp.id %}" class="btn btn-sm btn-outline-primary mb-1">Overview</a>
+            <a href="{% url 'staff:camp_overview' camp.id %}" class="btn btn-sm btn-outline-primary mb-1">Manage</a>
           </td>
         </tr>
       {% empty %}
