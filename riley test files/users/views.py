@@ -1,13 +1,13 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
-from .forms import CreateUserForm, CreateLoginForm, CreateFamilyEditForm
-from campreg.forms import IndividualForm
-from campreg.models import Individual, Family
+from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
 from django.conf import settings
-from campreg.models import Camp, Family, WaitingList
-from django.contrib.auth.decorators import login_required
+
+from .forms import CreateUserForm, CreateLoginForm, CreateFamilyEditForm
+from campreg.forms import IndividualForm
+from campreg.models import Individual, Family, Camp, WaitingList
 
 def account_view(request):
     user = request.user
@@ -75,7 +75,7 @@ def logout_view(request):
     if request.method == "POST":
         logout(request)
         return redirect('register')
-
+'''
 def promote_next_waitlisted_family(camp):
     next_waitlisted = WaitingList.objects.filter(camp=camp).order_by('date_added').first()
     if next_waitlisted:
@@ -88,7 +88,7 @@ def promote_next_waitlisted_family(camp):
                 send_mail("Regent Summer Camp Registration Confirmation","Your registration for the Regent University Summer Camp has been confirmed. \nFor more information, visit 127.0.0.1:8000/home", settings.EMAIL_HOST_USER,[c.email])
         next_waitlisted.delete()
         print(f"Promoted {next_waitlisted.family} to {camp.name}")
-
+'''
 @login_required
 def remove_camp_registration(request, camp_id):
     user = request.user
@@ -116,10 +116,10 @@ def remove_camp_registration(request, camp_id):
     return redirect('users:account')
 
 def promote_next_waitlisted_family(camp):
-    next_entry = WaitingList.objects.filter(camp=camp).order_by('date_added').first()
+    waitlist = WaitingList.objects.filter(camp=camp).order_by('date_added')
 
-    if next_entry:
-        family = next_entry.family
+    for entry in waitlist:
+        family = entry.family
         children = family.members.exclude(id=family.primary_contact.id)
         child_count = children.count()
 
@@ -127,30 +127,39 @@ def promote_next_waitlisted_family(camp):
             f.members.exclude(id=f.primary_contact.id).count()
             for f in camp.registered_families.all()
         )
-
         available_spots = max(0, camp.max_capacity - current_enrolled)
 
         if child_count <= available_spots:
+            # Register the family
             camp.registered_families.add(family)
+
+            # Send email to primary contact
             waitlist_email = family.primary_contact.email
-            send_mail("Regent Summer Camp Registration Confirmation",f"Hello {family.primary_contact.first_name},\n\nSpace has opened up and you have been moved from the waitlist and registered for {camp.name} running from {camp.start_date} to {camp.end_date}.\nFor more information, visit 127.0.0.1:8000/home", settings.EMAIL_HOST_USER,[waitlist_email])
-            children = family.members.exclude(id=family.primary_contact.id) if family else []
+            send_mail(
+                "Regent Summer Camp Registration Confirmation",
+                f"Hello {family.primary_contact.first_name},\n\n"
+                f"Space has opened up and you have been moved from the waitlist and registered for {camp.name} "
+                f"running from {camp.start_date} to {camp.end_date}.\n"
+                f"For more information, visit 127.0.0.1:8000/home",
+                settings.EMAIL_HOST_USER,
+                [waitlist_email]
+            )
+
+            # Email each child (if email is provided)
             for c in children:
                 if c.email:
-                    send_mail("Regent Summer Camp Registration Confirmation",f"Hello {c.first_name},\n\nYour registration for the {camp.name} running from {camp.start_date} to {camp.end_date} has been confirmed.\nFor more information, visit 127.0.0.1:8000/home", settings.EMAIL_HOST_USER,[c.email])
-            next_entry.delete()
-            print(f"Promoted {family} to {camp.name}")
+                    send_mail(
+                        "Regent Summer Camp Registration Confirmation",
+                        f"Hello {c.first_name},\n\n"
+                        f"Your registration for the {camp.name} running from {camp.start_date} to {camp.end_date} "
+                        f"has been confirmed.\n"
+                        f"For more information, visit 127.0.0.1:8000/home",
+                        settings.EMAIL_HOST_USER,
+                        [c.email]
+                    )
 
-            # 🔔 TODO: Notify primary contact that their family was promoted from the waitlist
-            # Example:
-            # send_mail(
-            #     subject="You've been registered for camp!",
-            #     message=f"Hello {family.primary_contact.first_name},\n\n"
-            #             f"Your family has been promoted from the waitlist and is now registered for {camp.name}.\n"
-            #             f"Camp runs from {camp.start_date} to {camp.end_date}.",
-            #     from_email=settings.EMAIL_HOST_USER,
-            #     recipient_list=[family.primary_contact.email],
-            # )
+            entry.delete()
+            print(f"Promoted {family} to {camp.name}")
         else:
             print(f"Skipped promotion: {family} has {child_count} children but only {available_spots} spots remain.")
 

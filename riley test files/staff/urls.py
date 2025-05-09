@@ -13,4 +13,7 @@ urlpatterns = [
     path('camp/<int:camp_id>/promote/<int:family_id>/', views.promote_waitlist, name='promote_waitlist'),
     path('camp/<int:camp_id>/remove/<int:family_id>/', views.remove_waitlist, name='remove_waitlist'),
     path('camp/<int:camp_id>/remove-family/<int:family_id>/', views.remove_family_from_camp, name='remove_family'),
+    path('camp/create/', views.create_camp, name='create_camp'),
+    path('camp/<int:camp_id>/archive/', views.archive_camp, name='archive_camp'),
+    path('camp/<int:camp_id>/unarchive/', views.unarchive_camp, name='unarchive_camp'),
 ]

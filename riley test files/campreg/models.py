@@ -33,7 +33,7 @@ class Camp(models.Model):
     end_date = models.DateField()
     max_capacity = models.IntegerField()
     registered_families = models.ManyToManyField(Family, blank=True)
-    #Change to registered_individuals/registered_users depending on family changes
+    archived = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name

@@ -1,0 +1,16 @@
+{% extends 'layout.html' %}
+
+{% block title %}Create New Camp{% endblock %}
+
+{% block content %}
+<div class="shadow p-4 mb-5 bg-body rounded">
+  <h1 class="mb-4">Create New Camp</h1>
+
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Create Camp</button>
+    <a href="{% url 'staff:dashboard' %}" class="btn btn-secondary ms-2">Cancel</a>
+  </form>
+</div>
+{% endblock %}

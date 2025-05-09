@@ -4,7 +4,30 @@
 
 {% block content %}
 <div class="shadow p-4 mb-5 bg-body rounded">
-  <h1>{{ camp.name }}</h1>
+
+  {% if camp.archived %}
+<div class="alert alert-secondary text-center fw-bold" role="alert">
+  This camp is <strong>archived</strong> and is no longer open for registration.
+</div>
+{% endif %}
+
+  <div class="d-flex align-items-center justify-content-between">
+    <h1>{{ camp.name }}</h1>
+    <form method="post" action="{% url 'staff:archive_camp' camp.id %}" class="ms-3">
+      {% csrf_token %}
+      {% if camp.archived %}
+        <!-- Unarchive form instead -->
+        </form>
+        <form method="post" action="{% url 'staff:unarchive_camp' camp.id %}">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-outline-secondary btn-sm">Unarchive</button>
+        </form>
+      {% else %}
+        <button type="submit" class="btn btn-outline-danger btn-sm">Archive Camp</button>
+      {% endif %}
+    </form>
+  </div>
+
   <p><strong>Dates:</strong> {{ camp.start_date }} – {{ camp.end_date }}</p>
   <p><strong>Capacity:</strong> {{ camp.max_capacity }}</p>
   <p><strong>Enrolled:</strong> {{ families|length }} families</p>

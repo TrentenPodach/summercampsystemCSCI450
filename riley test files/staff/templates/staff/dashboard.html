@@ -12,7 +12,7 @@
     <strong>Total Waitlisted Families:</strong> {{ total_waitlisted }}
   </div>
 
-  <!-- Table showing all camps -->
+  <!-- Active Camps Table -->
   <h3 class="mt-4">Camps Overview</h3>
   <table class="table table-striped table-bordered">
     <thead class="table-light">
@@ -28,20 +28,15 @@
       </tr>
     </thead>
     <tbody>
-      {% for camp in camps %}
+      {% for camp in active_camps %}
         <tr>
-          <!-- Camp basic info -->
           <td>{{ camp.name }}</td>
           <td>{{ camp.start_date }}</td>
           <td>{{ camp.end_date }}</td>
           <td>{{ camp.max_capacity }}</td>
-
-          <!-- Enrollment and waitlist info -->
           <td>{{ camp.enrolled_children }}</td>
           <td>{{ camp.waitlisted_children }}</td>
           <td>{{ camp.available_spots }} / {{ camp.max_capacity }}</td>
-
-          <!-- Action buttons -->
           <td>
             <a href="{% url 'staff:camp_overview' camp.id %}" class="btn btn-sm btn-outline-primary mb-1">Overview</a>
           </td>
@@ -49,6 +44,46 @@
       {% empty %}
         <tr>
           <td colspan="8" class="text-center text-muted">No camps found.</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <!-- Create New Camp Button -->
+  <a href="{% url 'staff:create_camp' %}" class="btn btn-success mb-3">+ Create New Camp</a>
+
+  <!-- Archived Camps Table -->
+  <h3 class="mt-5">Archived Camps <span class="badge bg-secondary">Hidden from Registration</span></h3>
+  <table class="table table-striped table-bordered table-sm text-muted">
+    <thead class="table-light">
+      <tr>
+        <th>Camp Name</th>
+        <th>Start Date</th>
+        <th>End Date</th>
+        <th>Capacity</th>
+        <th>Enrolled</th>
+        <th>Waitlisted</th>
+        <th>Available</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for camp in archived_camps %}
+        <tr class="text-muted">
+          <td>{{ camp.name }}</td>
+          <td>{{ camp.start_date }}</td>
+          <td>{{ camp.end_date }}</td>
+          <td>{{ camp.max_capacity }}</td>
+          <td>{{ camp.enrolled_children }}</td>
+          <td>{{ camp.waitlisted_children }}</td>
+          <td>{{ camp.available_spots }} / {{ camp.max_capacity }}</td>
+          <td>
+            <a href="{% url 'staff:camp_overview' camp.id %}" class="btn btn-sm btn-outline-secondary">View</a>
+          </td>
+        </tr>
+      {% empty %}
+        <tr>
+          <td colspan="8" class="text-center">No archived camps.</td>
         </tr>
       {% endfor %}
     </tbody>

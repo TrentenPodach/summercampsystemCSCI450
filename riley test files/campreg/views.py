@@ -121,18 +121,6 @@ def register(request):
 def registration_success(request):
     return render(request, 'campreg/success.html')
 
-def promote_next_waitlisted_family(camp):
-    next_waitlisted = WaitingList.objects.filter(camp=camp).order_by('date_added').first()
-    if next_waitlisted:
-        camp.registered_families.add(next_waitlisted.family)
-
-        next_waitlisted.delete()
-        
-        
-
-        # TEMP: Print for dev testing
-        print(f"Promoted {next_waitlisted.family} from waitlist to camp: {camp.name}")
-
 @login_required
 def remove_family_from_camp(request, camp_id, family_id):
     camp = get_object_or_404(Camp, id=camp_id)

@@ -32,7 +32,7 @@ class FamilyForm(forms.ModelForm):
 
 class CampChoiceForm(forms.Form):
     camp = forms.ModelChoiceField(
-        queryset=Camp.objects.all(),
+        queryset=Camp.objects.filter(archived=False).order_by('start_date'),
         empty_label="Select a camp",
         widget=forms.Select(attrs={'class': 'form-control'})
     )
