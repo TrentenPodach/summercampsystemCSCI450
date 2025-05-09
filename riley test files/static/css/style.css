@@ -12,6 +12,10 @@ label {
     font-size: large;
 }
 
+.alert {
+    justify-content: center;
+}
+
 .navbar-regent .nav-link {
     color: #062f6d;
     font-weight: 500;

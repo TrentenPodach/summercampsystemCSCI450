@@ -14,18 +14,6 @@
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body>
-
-    <!-- Flash messages -->
-    {% if messages %}
-    <div class="container mt-3">
-        {% for message in messages %}
-        <div class="alert alert-{{ message.tags }}">
-            {{ message }}
-        </div>
-        {% endfor %}
-    </div>
-    {% endif %}
-
 <section class="bg-col">
     <!-- Main navbar section -->
     <div class="container-fluid container-fullwidth bg-light">
@@ -98,7 +86,22 @@
 
     <!-- Main page content container -->
     <div class="container-fluid container-fullwidth mt-3">
-        <div class="col d-flex justify-content-center">
+        <div class="row d-flex justify-content-center">
+            {% if messages %}
+                <div class="container d-flex justify-content-center">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissable fade show" role="alert">
+                        <div class="d-flex">
+                            {{ message }}
+                            <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label"Close"></button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+        <div class="row d-flex justify-content-center">
+            <!-- Flash messages -->
             {% block content %}
             {% endblock %}
         </div>
