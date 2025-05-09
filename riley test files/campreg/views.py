@@ -8,6 +8,7 @@ from django.core.mail import send_mail
 from django.conf import settings
 from .models import Camp, WaitingList, Individual, Family
 from django.shortcuts import get_object_or_404
+from django.contrib import messages
 
 def home(request):
     return render(request, 'campreg/home.html')
@@ -127,8 +128,14 @@ def remove_family_from_camp(request, camp_id, family_id):
 
     if family in camp.registered_families.all():
         camp.registered_families.remove(family)
-        print(f"Removed {family} from {camp.name}")
+
+        # Delete all children (not the primary)
+        for member in family.members.exclude(id=family.primary_contact.id):
+            family.members.remove(member)
+            member.delete()
+
         promote_next_waitlisted_family(camp)
+
     else:
         print(f"{family} was not registered in {camp.name}")
 

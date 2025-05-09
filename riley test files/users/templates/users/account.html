@@ -9,12 +9,22 @@ My Account
   <h1>Account and Family Details</h1>
   <br>
 
-  <form method="post">
-    {% csrf_token %}
-    <h3>Primary Contact Info</h3>
-    {{ individual_form.as_p }}
-    <button type="submit" class="btn btn-primary">Save Changes</button>
-  </form>
+  <!-- Primary Contact Info -->
+  <h3>Primary Contact Info</h3>
+  <div id="primary-display">
+    <p><strong>Name:</strong> {{ individual_form.instance.first_name }} {{ individual_form.instance.last_name }}</p>
+    <p><strong>Date of Birth:</strong> {{ individual_form.instance.date_of_birth }}</p>
+    <p><strong>Email:</strong> {{ individual_form.instance.email }}</p>
+    <button type="button" class="btn btn-outline-secondary" onclick="toggleSection('primary')">Modify</button>
+  </div>
+
+  <div id="primary-form" style="display:none;">
+    <form method="post">
+      {% csrf_token %}
+      {{ individual_form.as_p }}
+      <button type="submit" class="btn btn-primary">Save Changes</button>
+    </form>
+  </div>
 
   {% if family %}
     <hr>
@@ -57,4 +67,12 @@ My Account
     <p class="text-muted mt-4">No family record found.</p>
   {% endif %}
 </div>
+
+<script>
+function toggleSection(section) {
+  document.getElementById(`${section}-form`).style.display = 'block';
+  document.getElementById(`${section}-display`).style.display = 'none';
+}
+</script>
 {% endblock %}
+

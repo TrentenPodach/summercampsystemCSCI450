@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'campreg',
     'users',
     'bootstrap5',
+    'staff',
 ]
 
 MIDDLEWARE = [
