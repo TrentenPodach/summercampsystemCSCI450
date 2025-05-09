@@ -6,9 +6,8 @@ from campreg.forms import IndividualForm
 from campreg.models import Individual, Family
 from django.core.mail import send_mail
 from django.conf import settings
-from campreg.models import Camp, WaitingList
-
-# Create your views here.
+from campreg.models import Camp, Family, WaitingList
+from django.contrib.auth.decorators import login_required
 
 def account_view(request):
     user = request.user
@@ -76,3 +75,27 @@ def logout_view(request):
     if request.method == "POST":
         logout(request)
         return redirect('register')
+
+def promote_next_waitlisted_family(camp):
+    next_waitlisted = WaitingList.objects.filter(camp=camp).order_by('date_added').first()
+    if next_waitlisted:
+        camp.registered_families.add(next_waitlisted.family)
+        next_waitlisted.delete()
+        print(f"Promoted {next_waitlisted.family} to {camp.name}")
+
+@login_required
+def remove_camp_registration(request, camp_id):
+    user = request.user
+    try:
+        individual = Individual.objects.get(user=user)
+        family = Family.objects.get(primary_contact=individual)
+        camp = Camp.objects.get(id=camp_id)
+
+        if family in camp.registered_families.all():
+            camp.registered_families.remove(family)
+            promote_next_waitlisted_family(camp)
+            print(f"{family} removed from {camp.name}")
+    except (Individual.DoesNotExist, Family.DoesNotExist, Camp.DoesNotExist):
+        print("Could not remove registration: object not found.")
+
+    return redirect('users:account')

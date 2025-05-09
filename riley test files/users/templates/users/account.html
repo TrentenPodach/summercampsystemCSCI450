@@ -1,9 +1,14 @@
 {% extends 'layout.html' %}
 
+{% block title %}
+My Account
+{% endblock %}
+
 {% block content %}
 <div class="shadow p-4 mb-5 bg-body rounded">
   <h1>Account and Family Details</h1>
   <br>
+
   <form method="post">
     {% csrf_token %}
     <h3>Primary Contact Info</h3>
@@ -28,7 +33,13 @@
     <h3>Registered Camps:</h3>
     <ul>
       {% for camp in registered_camps %}
-        <li>{{ camp.name }} ({{ camp.start_date }} to {{ camp.end_date }})</li>
+        <li>
+          {{ camp.name }} ({{ camp.start_date }} – {{ camp.end_date }})
+          <form method="post" action="{% url 'users:remove_camp' camp.id %}" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+          </form>
+        </li>
       {% empty %}
         <li>Not registered in any camp.</li>
       {% endfor %}
@@ -42,6 +53,8 @@
         <li>Not on any waitlists.</li>
       {% endfor %}
     </ul>
+  {% else %}
+    <p class="text-muted mt-4">No family record found.</p>
   {% endif %}
 </div>
 {% endblock %}
