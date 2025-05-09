@@ -147,7 +147,14 @@ def register(request):
     })
 
 def registration_success(request):
-    return render(request, 'campreg/success.html')
+    camp_name = request.session.pop('last_registered_camp', None)
+    was_waitlisted = request.session.pop('was_waitlisted', False)
+
+    return render(request, 'campreg/success.html', {
+        'camp_name': camp_name,
+        'was_waitlisted': was_waitlisted,
+    })
+
 
 @login_required
 def remove_family_from_camp(request, camp_id, family_id):

@@ -56,11 +56,17 @@ My Account
     </ul>
 
     <h3>Waitlisted Camps:</h3>
-    <ul>
+    <ul class="list-group">
       {% for wait in waitlisted_camps %}
-        <li>{{ wait.camp.name }} (Waitlisted on {{ wait.date_added|date:"Y-m-d H:i" }})</li>
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          <span>{{ wait.camp.name }} (Waitlisted on {{ wait.date_added|date:"Y-m-d H:i" }})</span>
+          <form method="post" action="{% url 'users:remove_waitlist' wait.camp.id %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+          </form>
+        </li>
       {% empty %}
-        <li>Not on any waitlists.</li>
+        <li class="list-group-item text-muted">Not on any waitlists.</li>
       {% endfor %}
     </ul>
   {% else %}
@@ -75,4 +81,3 @@ function toggleSection(section) {
 }
 </script>
 {% endblock %}
-

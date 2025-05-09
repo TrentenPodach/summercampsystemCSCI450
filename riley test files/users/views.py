@@ -163,3 +163,14 @@ def promote_next_waitlisted_family(camp):
         else:
             print(f"Skipped promotion: {family} has {child_count} children but only {available_spots} spots remain.")
 
+@login_required
+def remove_waitlist_entry(request, camp_id):
+    user = request.user
+    individual = Individual.objects.filter(user=user).first()
+    family = Family.objects.filter(primary_contact=individual).first()
+
+    if family:
+        WaitingList.objects.filter(camp_id=camp_id, family=family).delete()
+        print(f"Removed {family} from waitlist for camp ID {camp_id}")
+
+    return redirect('users:account')
