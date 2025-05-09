@@ -12,4 +12,5 @@ urlpatterns = [
     # Post actions from the overview page
     path('camp/<int:camp_id>/promote/<int:family_id>/', views.promote_waitlist, name='promote_waitlist'),
     path('camp/<int:camp_id>/remove/<int:family_id>/', views.remove_waitlist, name='remove_waitlist'),
+    path('camp/<int:camp_id>/remove-family/<int:family_id>/', views.remove_family_from_camp, name='remove_family'),
 ]

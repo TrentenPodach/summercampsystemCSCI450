@@ -8,6 +8,7 @@
   <p><strong>Dates:</strong> {{ camp.start_date }} – {{ camp.end_date }}</p>
   <p><strong>Capacity:</strong> {{ camp.max_capacity }}</p>
   <p><strong>Enrolled:</strong> {{ families|length }} families</p>
+  <p><strong>Children Enrolled:</strong> {{ total_children }} / {{ camp.max_capacity }}</p>  
   <p><strong>Waitlisted:</strong> {{ waitlisted|length }} families</p>
 
   <hr>
@@ -25,9 +26,13 @@
           <div id="enrolled-{{ family.id }}" class="accordion-collapse collapse"
                data-bs-parent="#enrolledAccordion">
             <div class="accordion-body">
+
+              <!-- Contact info -->
               <p><strong>Email:</strong>
                 <a href="mailto:{{ family.primary_contact.email }}">{{ family.primary_contact.email }}</a>
               </p>
+
+              <!-- Children list -->
               <p><strong>Children:</strong></p>
               <ul>
                 {% for child in family.children %}
@@ -36,6 +41,13 @@
                   <li><em>No children listed</em></li>
                 {% endfor %}
               </ul>
+
+              <!-- Remove registration button -->
+              <form method="post" action="{% url 'staff:remove_family' camp.id family.id %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger btn-sm mt-2">Remove Registration</button>
+              </form>
+
             </div>
           </div>
         </div>
@@ -46,7 +58,7 @@
   {% endif %}
 
   <hr>
-  <h3>Waitlisted Families</h3>
+  <h3 id="waitlist">Waitlisted Families</h3>
   {% if waitlisted %}
     <table class="table table-striped">
       <thead>
@@ -54,6 +66,7 @@
           <th>Family Name</th>
           <th>Primary Contact</th>
           <th>Email</th>
+          <th>Children</th>
           <th>Date Added</th>
           <th>Actions</th>
         </tr>
@@ -64,6 +77,7 @@
             <td>{{ entry.family.family_name }}</td>
             <td>{{ entry.family.primary_contact.first_name }} {{ entry.family.primary_contact.last_name }}</td>
             <td><a href="mailto:{{ entry.family.primary_contact.email }}">{{ entry.family.primary_contact.email }}</a></td>
+            <td>{{ entry.child_count }}</td>
             <td>{{ entry.date_added|date:"Y-m-d H:i" }}</td>
             <td>
               <form method="post" action="{% url 'staff:promote_waitlist' camp.id entry.family.id %}" style="display:inline;">

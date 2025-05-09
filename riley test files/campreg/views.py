@@ -155,3 +155,4 @@ def remove_child(request, child_id):
             print(f"Removed child {child} from {family}")
 
     return redirect('register')  # or wherever your registration page lives
+

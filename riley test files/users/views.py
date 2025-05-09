@@ -92,10 +92,53 @@ def remove_camp_registration(request, camp_id):
         camp = Camp.objects.get(id=camp_id)
 
         if family in camp.registered_families.all():
+            # Remove from camp
             camp.registered_families.remove(family)
+
+            # Remove non-primary children
+            for member in family.members.exclude(id=family.primary_contact.id):
+                family.members.remove(member)
+                member.delete()
+
+            # Promote from waitlist
             promote_next_waitlisted_family(camp)
+
             print(f"{family} removed from {camp.name}")
     except (Individual.DoesNotExist, Family.DoesNotExist, Camp.DoesNotExist):
         print("Could not remove registration: object not found.")
 
     return redirect('users:account')
+
+def promote_next_waitlisted_family(camp):
+    next_entry = WaitingList.objects.filter(camp=camp).order_by('date_added').first()
+
+    if next_entry:
+        family = next_entry.family
+        children = family.members.exclude(id=family.primary_contact.id)
+        child_count = children.count()
+
+        current_enrolled = sum(
+            f.members.exclude(id=f.primary_contact.id).count()
+            for f in camp.registered_families.all()
+        )
+
+        available_spots = max(0, camp.max_capacity - current_enrolled)
+
+        if child_count <= available_spots:
+            camp.registered_families.add(family)
+            next_entry.delete()
+            print(f"Promoted {family} to {camp.name}")
+
+            # 🔔 TODO: Notify primary contact that their family was promoted from the waitlist
+            # Example:
+            # send_mail(
+            #     subject="You've been registered for camp!",
+            #     message=f"Hello {family.primary_contact.first_name},\n\n"
+            #             f"Your family has been promoted from the waitlist and is now registered for {camp.name}.\n"
+            #             f"Camp runs from {camp.start_date} to {camp.end_date}.",
+            #     from_email=settings.EMAIL_HOST_USER,
+            #     recipient_list=[family.primary_contact.email],
+            # )
+        else:
+            print(f"Skipped promotion: {family} has {child_count} children but only {available_spots} spots remain.")
+
