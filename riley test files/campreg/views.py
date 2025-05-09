@@ -129,11 +129,29 @@ def register(request):
         family_form = FamilyForm(instance=family)
         camp_form = CampChoiceForm()
 
+    # Build dictionary of camp availability
+    camp_availability = {}
+    for camp in Camp.objects.filter(archived=False):
+        enrolled = sum(
+            f.members.exclude(id=f.primary_contact.id).count()
+            for f in camp.registered_families.all()
+        )
+        available = max(0, camp.max_capacity - enrolled)
+        camp_availability[camp.id] = {
+            'available': available,
+            'max': camp.max_capacity,
+        }    
+
+    first_time = not individual or not family
+
+
     return render(request, 'campreg/camp_register.html', {
         'individual_form': individual_form,
         'family_form': family_form,
         'camp_form': camp_form,
-        'children': children
+        'children': children,
+        'camp_availability': camp_availability,
+        'first_time': first_time
     })
 
 def registration_success(request):
