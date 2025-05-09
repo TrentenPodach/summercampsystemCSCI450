@@ -135,10 +135,16 @@ def promote_next_waitlisted_family(camp):
 
             # Send email to primary contact
             waitlist_email = family.primary_contact.email
+            children_list = ""
+            for child in children:
+                if child == children.first():
+                    children_list += child.first_name
+                else:
+                    children_list += f", " + child.first_name
             send_mail(
                 "Regent Summer Camp Registration Confirmation",
                 f"Hello {family.primary_contact.first_name},\n\n"
-                f"Space has opened up and you have been moved from the waitlist and registered for {camp.name} "
+                f"Space has opened up and {children_list} have been moved from the waitlist and registered for {camp.name} "
                 f"running from {camp.start_date} to {camp.end_date}.\n"
                 f"For more information, visit 127.0.0.1:8000/home",
                 settings.EMAIL_HOST_USER,

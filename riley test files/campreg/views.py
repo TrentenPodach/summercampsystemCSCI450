@@ -94,13 +94,21 @@ def register(request):
 
             user_email = family.primary_contact.email
 
+            children_check = family.members.exclude(id=family.primary_contact.id) if family else []
+            children_list = ""
+            for child in children_check:
+                if child == children_check.first():
+                    children_list += child.first_name
+                else:
+                    children_list += f", " + child.first_name
+
             if current_total + registering_now <= selected_camp.max_capacity:
                 selected_camp.registered_families.add(family)
                 print(f"Registered {family} to {selected_camp.name}")
                 
-                send_mail("Regent Summer Camp Registration Confirmation",f"Hello {family.primary_contact.first_name},\n\nYour application to participate in {selected_camp.name} running from {selected_camp.start_date} to {selected_camp.end_date} has been approved.\nFor more information, visit 127.0.0.1:8000/home", settings.EMAIL_HOST_USER,[user_email])
-                children_email_check = family.members.exclude(id=family.primary_contact.id) if family else []
-                for c in children_email_check:
+                
+                send_mail("Regent Summer Camp Registration Confirmation",f"Hello {family.primary_contact.first_name},\n\nYour application for {children_list} to participate in {selected_camp.name} running from {selected_camp.start_date} to {selected_camp.end_date} has been approved.\nFor more information, visit 127.0.0.1:8000/home", settings.EMAIL_HOST_USER,[user_email])
+                for c in children_check:
                     if c.email:
                         send_mail("Regent Summer Camp Registration Confirmation",f"Hello {c.first_name},\n\nYour registration for {selected_camp.name} running from {selected_camp.start_date} to {selected_camp.end_date} has been confirmed. \nFor more information, visit 127.0.0.1:8000/home", settings.EMAIL_HOST_USER,[c.email])
             else:
@@ -108,7 +116,7 @@ def register(request):
                 if not existing_wait:
                     WaitingList.objects.create(family=family, camp=selected_camp)
                     print(f"{family} added to waitlist for {selected_camp.name}")
-                    send_mail("Regent Summer Camp Waitlist",f"Hello {family.primary_contact.first_name},\n\n{selected_camp.name} running from {selected_camp.start_date} to {selected_camp.end_date} is full.\n\nYour application has been processed, and you have been added to the waitlist. If space becomes available for you, you will be registered automatically and an email will be sent to inform you. \nFor more information, visit 127.0.0.1:8000/home", settings.EMAIL_HOST_USER,[user_email])
+                    send_mail("Regent Summer Camp Waitlist",f"Hello {family.primary_contact.first_name},\n\n{selected_camp.name} running from {selected_camp.start_date} to {selected_camp.end_date} is full.\n\nYour application has been processed, and {children_list} have been added to the waitlist. If space becomes available for you, you will be registered automatically and an email will be sent to inform you. \nFor more information, visit 127.0.0.1:8000/home", settings.EMAIL_HOST_USER,[user_email])
                 else:
                     print(f"{family} already on waitlist for {selected_camp.name}")
 
