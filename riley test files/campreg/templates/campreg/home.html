@@ -32,9 +32,13 @@
         </div>
 
         <div class="card-body">
-          <p><strong>Capacity:</strong> {{ camp.max_capacity }}</p>
-          <p><strong>Enrolled:</strong> {{ camp.enrolled }}</p>
-          <p><strong>Waitlisted:</strong> {{ camp.waitlist_count }}</p>
+            <p>
+                <strong>Enrollment:</strong>
+                {{ camp.enrolled }} / {{ camp.max_capacity }} 
+                &nbsp;&nbsp; | &nbsp;&nbsp;
+                <strong>Waitlisted:</strong> {{ camp.waitlist_count }}
+              </p>
+              
 
           {% if camp.posts.all %}
             <hr>

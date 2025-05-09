@@ -134,12 +134,16 @@ def register(request):
             'max': camp.max_capacity,
         }    
 
+    first_time = not individual or not family
+
+
     return render(request, 'campreg/camp_register.html', {
         'individual_form': individual_form,
         'family_form': family_form,
         'camp_form': camp_form,
         'children': children,
-        'camp_availability': camp_availability
+        'camp_availability': camp_availability,
+        'first_time': first_time
     })
 
 def registration_success(request):
