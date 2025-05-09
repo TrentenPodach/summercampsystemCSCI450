@@ -80,6 +80,12 @@ def promote_next_waitlisted_family(camp):
     next_waitlisted = WaitingList.objects.filter(camp=camp).order_by('date_added').first()
     if next_waitlisted:
         camp.registered_families.add(next_waitlisted.family)
+        waitlist_email = next_waitlisted.family.primary_contact.email
+        send_mail("Regent Summer Camp Registration Confirmation","Space has opened in the camp and you have been moved from the waitlist and registered. \nFor more information, visit 127.0.0.1:8000/home", settings.EMAIL_HOST_USER,[waitlist_email])
+        children = next_waitlisted.family.members.exclude(id=next_waitlisted.family.primary_contact.id) if next_waitlisted.family else []
+        for c in children:
+            if c.email:
+                send_mail("Regent Summer Camp Registration Confirmation","Your registration for the Regent University Summer Camp has been confirmed. \nFor more information, visit 127.0.0.1:8000/home", settings.EMAIL_HOST_USER,[c.email])
         next_waitlisted.delete()
         print(f"Promoted {next_waitlisted.family} to {camp.name}")
 
@@ -126,6 +132,12 @@ def promote_next_waitlisted_family(camp):
 
         if child_count <= available_spots:
             camp.registered_families.add(family)
+            waitlist_email = family.primary_contact.email
+            send_mail("Regent Summer Camp Registration Confirmation",f"Hello {family.primary_contact.first_name},\n\nSpace has opened up and you have been moved from the waitlist and registered for {camp.name} running from {camp.start_date} to {camp.end_date}.\nFor more information, visit 127.0.0.1:8000/home", settings.EMAIL_HOST_USER,[waitlist_email])
+            children = family.members.exclude(id=family.primary_contact.id) if family else []
+            for c in children:
+                if c.email:
+                    send_mail("Regent Summer Camp Registration Confirmation",f"Hello {c.first_name},\n\nYour registration for the {camp.name} running from {camp.start_date} to {camp.end_date} has been confirmed.\nFor more information, visit 127.0.0.1:8000/home", settings.EMAIL_HOST_USER,[c.email])
             next_entry.delete()
             print(f"Promoted {family} to {camp.name}")
 
