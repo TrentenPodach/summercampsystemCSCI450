@@ -17,6 +17,10 @@ Registration for Summer Camp
       <div class="text-danger">{{ camp_form.camp.errors }}</div>
     {% endif %}
 
+    <!-- Availability status will go here -->
+    <div id="availability-status" class="mt-2 text-muted"></div>
+
+
     <!-- Primary Contact Section -->
     <h3>Primary Contact</h3>
     <div id="primary-display">
@@ -119,4 +123,43 @@ function addChild() {
   childCount++;
 }
 </script>
+
+<script>
+  const availability = {{ camp_availability|safe }};
+  
+  function countTotalChildren() {
+    let existing = document.querySelectorAll('[id^="child-row-"]').length;
+    let newChildren = document.querySelectorAll('#children-container input[name$="_first_name"]').length;
+    return existing + newChildren;
+  }
+  
+  function updateAvailabilityMessage() {
+    const campSelect = document.querySelector('select[name="camp"]');
+    const campId = campSelect.value;
+    const statusDiv = document.getElementById('availability-status');
+  
+    if (!campId || !availability[campId]) {
+      statusDiv.textContent = '';
+      return;
+    }
+  
+    const camp = availability[campId];
+    const totalChildren = countTotalChildren();
+  
+    if (totalChildren <= camp.available) {
+      statusDiv.innerHTML = `<span class="text-success">Seats available: ${camp.available}</span>`;
+    } else {
+      statusDiv.innerHTML = `<span class="text-warning">Only ${camp.available} seat(s) left — you will be added to the waitlist</span>`;
+    }
+  }
+  
+  // Update when a camp is selected or children change
+  document.addEventListener('DOMContentLoaded', () => {
+    updateAvailabilityMessage();
+  
+    document.querySelector('select[name="camp"]').addEventListener('change', updateAvailabilityMessage);
+    document.getElementById('children-container').addEventListener('input', updateAvailabilityMessage);
+    document.getElementById('existing-children')?.addEventListener('click', updateAvailabilityMessage);
+  });
+  </script>
 {% endblock %}
