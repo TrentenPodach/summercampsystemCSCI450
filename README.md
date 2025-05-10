@@ -2,9 +2,7 @@
 
 Welcome! This project is a Django-based web app for managing summer camp registrations.
 
-----------------------------------------
 ## QUICK START INSTRUCTIONS
-----------------------------------------
 
 ### 1. Clone the Repository
 ```
@@ -33,9 +31,7 @@ Default Admin Login:
 - Username: riley
 - Password: 1234
 
-----------------------------------------
 ## COMANDS
-----------------------------------------
 
 | Task                     | Windows Command     | Mac/Linux Command  |
 |---------------------------|----------------------|--------------------|
@@ -44,9 +40,7 @@ Default Admin Login:
 | Freeze dependencies       | winmake.bat → 3      | make freeze        |
 | Delete virtual environment| winmake.bat → 4      | make clean         |
 
-----------------------------------------
 ## NOTES
-----------------------------------------
 
 - If you install new Python packages, update the requirements.txt by using the Freeze option.
 - Always activate your virtual environment if running Django manually:
