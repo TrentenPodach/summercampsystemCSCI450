@@ -4,7 +4,10 @@ from .models import Individual, Family, User, Camp
 class IndividualForm(forms.ModelForm):
     first_name = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'class':'form-control'}))
     last_name = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'class':'form-control'}))
-    date_of_birth = forms.DateField(widget=forms.DateInput(attrs={'class':'form-control'}))
+    date_of_birth = forms.DateField(widget=forms.DateInput(attrs={
+        'class': 'form-control',
+        'type': 'date'
+    }))
     email = forms.EmailField(max_length=50, widget=forms.EmailInput(attrs={'class':'form-control'}))
 
     class Meta:
