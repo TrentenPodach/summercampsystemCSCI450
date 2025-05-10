@@ -4,6 +4,8 @@ from campreg.models import Camp, Family, WaitingList
 from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
 from .forms import CampForm, CampPostForm, CampPost
+from django.core.mail import send_mail
+from django.conf import settings
 
 
 
@@ -131,7 +133,12 @@ def create_camp(request):
         post_form = CampPostForm(request.POST)
 
         if camp_form.is_valid() and post_form.is_valid():
-            camp = camp_form.save()
+            camp = camp_form.save(commit=False)
+            for fam in Family.objects.all():
+                update_user = fam.primary_contact
+                user_email = update_user.email
+                send_mail("Regent Summer Camp Registration Confirmation",f"Hello {update_user.first_name},\n\nA new camp, {camp.name}, has been created.\nFor more information or to register, visit 127.0.0.1:8000/home", settings.EMAIL_HOST_USER,[user_email])
+            camp.save()
 
             # Save post only if title or content provided
             if post_form.cleaned_data['title'] or post_form.cleaned_data['content']:
@@ -158,6 +165,12 @@ def add_camp_post(request, camp_id):
         if form.is_valid():
             post = form.save(commit=False)
             post.camp = camp
+
+            for fam in Family.objects.all():
+                update_user = fam.primary_contact
+                user_email = update_user.email
+                send_mail("Regent Summer Camp Registration Confirmation",f"Hello {update_user.first_name},\n\nA new post, {post.title}, has been created.\nFor more information or to see the post, visit 127.0.0.1:8000/home", settings.EMAIL_HOST_USER,[user_email])
+
             post.save()
             return redirect('staff:camp_overview', camp_id=camp.id)
     else:
