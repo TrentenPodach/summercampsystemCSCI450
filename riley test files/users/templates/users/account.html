@@ -1,0 +1,83 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+My Account
+{% endblock %}
+
+{% block content %}
+<div class="shadow p-4 mb-5 bg-body rounded">
+  <h1>Account and Family Details</h1>
+  <br>
+
+  <!-- Primary Contact Info -->
+  <h3>Primary Contact Info</h3>
+  <div id="primary-display">
+    <p><strong>Name:</strong> {{ individual_form.instance.first_name }} {{ individual_form.instance.last_name }}</p>
+    <p><strong>Date of Birth:</strong> {{ individual_form.instance.date_of_birth }}</p>
+    <p><strong>Email:</strong> {{ individual_form.instance.email }}</p>
+    <button type="button" class="btn btn-outline-secondary" onclick="toggleSection('primary')">Modify</button>
+  </div>
+
+  <div id="primary-form" style="display:none;">
+    <form method="post">
+      {% csrf_token %}
+      {{ individual_form.as_p }}
+      <button type="submit" class="btn btn-primary">Save Changes</button>
+    </form>
+  </div>
+
+  {% if family %}
+    <hr>
+    <h3>Family Name:</h3>
+    <p>{{ family.family_name }}</p>
+
+    <h3>Family Members:</h3>
+    <ul>
+      {% for member in members %}
+        <li>{{ member.first_name }} {{ member.last_name }} (DOB: {{ member.date_of_birth }})</li>
+      {% empty %}
+        <li>No additional members.</li>
+      {% endfor %}
+    </ul>
+
+    <h3>Registered Camps:</h3>
+    <ul>
+      {% for camp in registered_camps %}
+        <li>
+          {{ camp.name }} ({{ camp.start_date }} – {{ camp.end_date }})
+          <form method="post" action="{% url 'users:remove_camp' camp.id %}" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+          </form>
+        </li>
+      {% empty %}
+        <li>Not registered in any camp.</li>
+      {% endfor %}
+    </ul>
+
+    <h3>Waitlisted Camps:</h3>
+    <ul class="list-group">
+      {% for wait in waitlisted_camps %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          <span>{{ wait.camp.name }} (Waitlisted on {{ wait.date_added|date:"Y-m-d H:i" }})</span>
+          <form method="post" action="{% url 'users:remove_waitlist' wait.camp.id %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+          </form>
+        </li>
+      {% empty %}
+        <li class="list-group-item text-muted">Not on any waitlists.</li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="text-muted mt-4">No family record found.</p>
+  {% endif %}
+</div>
+
+<script>
+function toggleSection(section) {
+  document.getElementById(`${section}-form`).style.display = 'block';
+  document.getElementById(`${section}-display`).style.display = 'none';
+}
+</script>
+{% endblock %}

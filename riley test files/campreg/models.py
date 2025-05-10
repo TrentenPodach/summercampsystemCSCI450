@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 
 class Individual(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     date_of_birth = models.DateField()
@@ -20,6 +21,7 @@ class Family(models.Model):
 
 class Account(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    #date_of_birth = models.DateField() temp removal
     family = models.OneToOneField(Family, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -31,6 +33,7 @@ class Camp(models.Model):
     end_date = models.DateField()
     max_capacity = models.IntegerField()
     registered_families = models.ManyToManyField(Family, blank=True)
+    archived = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name
@@ -49,3 +52,12 @@ class MailingList(models.Model):
 
     def __str__(self):
         return self.email
+
+class CampPost(models.Model):
+    camp = models.ForeignKey(Camp, on_delete=models.CASCADE, related_name='posts')
+    title = models.CharField(max_length=100)
+    content = models.TextField()
+    posted_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.title} ({self.camp.name})"

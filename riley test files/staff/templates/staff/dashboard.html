@@ -1,0 +1,92 @@
+{% extends 'layout.html' %}
+
+{% block title %}Staff Dashboard{% endblock %}
+
+{% block content %}
+<div class="shadow p-4 mb-5 bg-body rounded">
+  <h1 class="mb-4">Staff Dashboard</h1>
+
+  <!-- Summary counts at the top 
+  <div class="mb-3">
+    <strong>Total Registered Families:</strong> {{ total_families }}<br>
+    <strong>Total Waitlisted Families:</strong> {{ total_waitlisted }}
+  </div>
+  -->
+  <!-- Active Camps Table -->
+  <h3 class="mt-4">Camps Overview</h3>
+  <table class="table table-striped table-bordered">
+    <thead class="table-light">
+      <tr>
+        <th>Camp Name</th>
+        <th>Start Date</th>
+        <th>End Date</th>
+        <th>Capacity</th>
+        <th>Enrolled Children</th>
+        <th>Waitlisted Children</th>
+        <th>Available Slots</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for camp in active_camps %}
+        <tr>
+          <td>{{ camp.name }}</td>
+          <td>{{ camp.start_date }}</td>
+          <td>{{ camp.end_date }}</td>
+          <td>{{ camp.max_capacity }}</td>
+          <td>{{ camp.enrolled_children }}</td>
+          <td>{{ camp.waitlisted_children }}</td>
+          <td>{{ camp.available_spots }} / {{ camp.max_capacity }}</td>
+          <td>
+            <a href="{% url 'staff:camp_overview' camp.id %}" class="btn btn-sm btn-outline-primary mb-1">Manage</a>
+          </td>
+        </tr>
+      {% empty %}
+        <tr>
+          <td colspan="8" class="text-center text-muted">No camps found.</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <!-- Create New Camp Button -->
+  <a href="{% url 'staff:create_camp' %}" class="btn btn-success mb-3">+ Create New Camp</a>
+
+  <!-- Archived Camps Table -->
+  <h3 class="mt-5">Archived Camps <span class="badge bg-secondary">Hidden from Registration</span></h3>
+  <table class="table table-striped table-bordered table-sm text-muted">
+    <thead class="table-light">
+      <tr>
+        <th>Camp Name</th>
+        <th>Start Date</th>
+        <th>End Date</th>
+        <th>Capacity</th>
+        <th>Enrolled</th>
+        <th>Waitlisted</th>
+        <th>Available</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for camp in archived_camps %}
+        <tr class="text-muted">
+          <td>{{ camp.name }}</td>
+          <td>{{ camp.start_date }}</td>
+          <td>{{ camp.end_date }}</td>
+          <td>{{ camp.max_capacity }}</td>
+          <td>{{ camp.enrolled_children }}</td>
+          <td>{{ camp.waitlisted_children }}</td>
+          <td>{{ camp.available_spots }} / {{ camp.max_capacity }}</td>
+          <td>
+            <a href="{% url 'staff:camp_overview' camp.id %}" class="btn btn-sm btn-outline-secondary">View</a>
+          </td>
+        </tr>
+      {% empty %}
+        <tr>
+          <td colspan="8" class="text-center">No archived camps.</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

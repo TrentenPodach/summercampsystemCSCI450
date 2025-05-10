@@ -1,0 +1,193 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+Registration for Summer Camp
+{% endblock %}
+
+{% block content %}
+<div class="shadow p-4 mb-5 bg-body rounded">
+  <h1>Summer Camp Registration</h1>
+  <form method="post">
+    {% csrf_token %}
+
+    <!-- Camp Selection -->
+    <h3 class="mt-4">Camp Selection</h3>
+    {{ camp_form.camp }}
+    {% if camp_form.camp.errors %}
+      <div class="text-danger">{{ camp_form.camp.errors }}</div>
+    {% endif %}
+
+    <!-- Availability status will go here -->
+    <div id="availability-status" class="mt-2 text-muted"></div>
+
+
+    <!-- Primary Contact Section -->
+    {% if first_time %}
+    <div id="primary-form">
+      {{ individual_form.as_p }}
+    </div>
+  {% else %}
+    <div id="primary-display">
+      <p><strong>Name:</strong> {{ individual_form.instance.first_name }} {{ individual_form.instance.last_name }}</p>
+      <p><strong>Date of Birth:</strong> {{ individual_form.instance.date_of_birth }}</p>
+      <p><strong>Email:</strong> {{ individual_form.instance.email }}</p>
+      <button type="button" class="btn btn-outline-secondary" onclick="toggleSection('primary')">Modify</button>
+    </div>
+    <div id="primary-form" style="display:none;">
+      {{ individual_form.as_p }}
+    </div>
+  {% endif %}
+
+    <!-- Family Info Section -->
+    {% if first_time %}
+    <div id="family-form">
+      {{ family_form.as_p }}
+    </div>
+  {% else %}
+    <div id="family-display">
+      <p><strong>Family Name:</strong> {{ family_form.instance.family_name }}</p>
+      <button type="button" class="btn btn-outline-secondary" onclick="toggleSection('family')">Modify</button>
+    </div>
+    <div id="family-form" style="display:none;">
+      {{ family_form.as_p }}
+    </div>
+  {% endif %}
+
+    <!-- Existing Children -->
+    {% if not first_time %}
+  <h3>Existing Children</h3>
+  {% if children %}
+    <ul class="list-group mb-3" id="existing-children">
+      {% for child in children %}
+        <li class="list-group-item d-flex justify-content-between align-items-center" id="child-row-{{ child.id }}">
+          <div id="child-info-{{ child.id }}">
+            {{ child.first_name }} {{ child.last_name }} (DOB: {{ child.date_of_birth }})
+          </div>
+          <div>
+            <input type="hidden" name="child_{{ child.id }}_delete" id="child-delete-{{ child.id }}" value="">
+            <button type="button" class="btn btn-danger btn-sm" id="remove-{{ child.id }}"
+                    onclick="markChildForDeletion({{ child.id }})">Remove</button>
+            <button type="button" class="btn btn-secondary btn-sm" style="display:none;"
+                    id="undo-{{ child.id }}" onclick="undoChildDeletion({{ child.id }})">Undo</button>
+          </div>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="text-muted">No existing children.</p>
+  {% endif %}
+{% endif %}
+
+    <!-- Add New Children -->
+    <h3>Add Children</h3>
+    <div id="children-container"></div>
+    <button type="button" class="btn btn-secondary my-2" onclick="addChild()">+ Add Child</button>
+
+    <br>
+    <button type="submit" class="btn btn-success mt-3">Submit Registration</button>
+  </form>
+</div>
+
+<script>
+function toggleSection(section) {
+  document.getElementById(`${section}-form`).style.display = 'block';
+  document.getElementById(`${section}-display`).style.display = 'none';
+}
+
+function markChildForDeletion(id) {
+  document.getElementById(`child-row-${id}`).classList.add('text-muted');
+  document.getElementById(`child-info-${id}`).style.textDecoration = "line-through";
+  document.getElementById(`child-delete-${id}`).value = "delete";
+  document.getElementById(`undo-${id}`).style.display = "inline-block";
+  document.getElementById(`remove-${id}`).style.display = "none";
+}
+
+function undoChildDeletion(id) {
+  document.getElementById(`child-row-${id}`).classList.remove('text-muted');
+  document.getElementById(`child-info-${id}`).style.textDecoration = "none";
+  document.getElementById(`child-delete-${id}`).value = "";
+  document.getElementById(`undo-${id}`).style.display = "none";
+  document.getElementById(`remove-${id}`).style.display = "inline-block";
+}
+
+let childCount = 0;
+function addChild() {
+  const container = document.getElementById('children-container');
+  const childDiv = document.createElement('div');
+  childDiv.classList.add('border', 'p-3', 'mb-3', 'position-relative');
+  childDiv.innerHTML = `
+    <button type="button" class="btn-close position-absolute top-0 end-0 m-2" onclick="this.parentElement.remove()"></button>
+    <div class="mb-2"><label>First Name</label>
+      <input type="text" name="child_${childCount}_first_name" class="form-control" required>
+    </div>
+    <div class="mb-2"><label>Last Name</label>
+      <input type="text" name="child_${childCount}_last_name" class="form-control" required>
+    </div>
+    <div class="mb-2"><label>Date of Birth</label>
+      <input type="date" name="child_${childCount}_dob" class="form-control" required>
+    </div>
+    <div class="mb-2"><label>Email (optional)</label>
+      <input type="email" name="child_${childCount}_email" class="form-control">
+    </div>
+  `;
+  container.appendChild(childDiv);
+  childCount++;
+}
+</script>
+
+<script>
+  const availability = {{ camp_availability|safe }};
+  
+  function countTotalChildren() {
+    let existing = document.querySelectorAll('[id^="child-row-"]').length;
+    let newChildren = document.querySelectorAll('#children-container input[name$="_first_name"]').length;
+    return existing + newChildren;
+  }
+  
+  function updateAvailabilityMessage() {
+    const campSelect = document.querySelector('select[name="camp"]');
+    const campId = campSelect.value;
+    const statusDiv = document.getElementById('availability-status');
+  
+    if (!campId || !availability[campId]) {
+      statusDiv.textContent = '';
+      return;
+    }
+  
+    const camp = availability[campId];
+    const totalChildren = countTotalChildren();
+  
+    if (totalChildren <= camp.available) {
+      statusDiv.innerHTML = `<span class="text-success">Seats available: ${camp.available}</span>`;
+    } else {
+      statusDiv.innerHTML = `<span class="text-warning">Only ${camp.available} seat(s) left — you will be added to the waitlist</span>`;
+    }
+  }
+  
+  // Update when a camp is selected or children change
+  document.addEventListener('DOMContentLoaded', () => {
+    updateAvailabilityMessage();
+  
+    document.querySelector('select[name="camp"]').addEventListener('change', updateAvailabilityMessage);
+    document.getElementById('children-container').addEventListener('input', updateAvailabilityMessage);
+    document.getElementById('existing-children')?.addEventListener('click', updateAvailabilityMessage);
+  });
+  </script>
+
+<script>
+  document.querySelector('form').addEventListener('submit', function (e) {
+    const existing = document.querySelectorAll('[id^="child-row-"]').length;
+    const deleted = document.querySelectorAll('[value="delete"]').length;
+    const activeExisting = existing - deleted;
+  
+    const newChildren = document.querySelectorAll('#children-container input[name$="_first_name"]').length;
+  
+    const total = activeExisting + newChildren;
+  
+    if (total < 1) {
+      e.preventDefault();
+      alert("You must register at least one child.");
+    }
+  });
+  </script>
+{% endblock %}

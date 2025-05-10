@@ -1,0 +1,69 @@
+{% extends 'layout.html' %}
+
+{% block title %}Summer Camps Overview{% endblock %}
+
+{% block content %}
+<div class="container">
+
+    <div class="card mb-5 shadow-sm">
+        <div class="card-body">
+          <h1 class="card-title">Welcome to Regent University Summer Camps</h1>
+          <p class="lead">
+            Regent University's summer camps are designed to nurture young hearts and minds through engaging, faith-centered programs. 
+            We provide a Christ-honoring environment where children can explore their interests, grow in confidence, and form lifelong friendships.
+          </p>
+          <p>
+            Our camps are led by caring staff who are committed to Regent’s mission of Christian leadership and excellence. Whether it’s creativity, 
+            athletics, STEM, or adventure — there’s a place for every child to grow spiritually, socially, and academically.
+          </p>
+        </div>
+      </div>
+
+  <h2 class="mb-4">Current Summer Camps</h2>
+
+  {% if camps %}
+    {% for camp in camps %}
+      <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <strong>{{ camp.name }}</strong>
+          <span class="text-muted">
+            {{ camp.start_date }} – {{ camp.end_date }}
+          </span>
+        </div>
+
+        <div class="card-body">
+            <p>
+                <strong>Enrollment:</strong>
+                {{ camp.enrolled }} / {{ camp.max_capacity }} 
+                &nbsp;&nbsp; | &nbsp;&nbsp;
+                <strong>Waitlisted:</strong> {{ camp.waitlist_count }}
+              </p>
+              
+
+          {% if camp.posts.all %}
+            <hr>
+            <h5 class="mb-2">Camp Announcements</h5>
+            {% for post in camp.posts.all %}
+              <div class="mb-3">
+                <h6 class="fw-bold">{{ post.title }}</h6>
+                <p class="mb-1">{{ post.content }}</p>
+                <small class="text-muted">Posted {{ post.posted_at|date:"M d, Y" }}</small>
+                {% if user.is_staff %}
+                <form method="post" action="{% url 'staff:delete_camp_post' post.id %}" class="mt-2">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-danger">Delete Post</button>
+                </form>
+                {% endif %}
+              </div>
+            {% empty %}
+              <p class="text-muted">No announcements yet.</p>
+            {% endfor %}
+          {% endif %}
+        </div>
+      </div>
+    {% endfor %}
+  {% else %}
+    <p class="text-muted">No active camps at this time.</p>
+  {% endif %}
+</div>
+{% endblock %}

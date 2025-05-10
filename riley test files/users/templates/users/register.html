@@ -1,0 +1,27 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+User Registration
+{% endblock %}
+
+{% block content %}
+{% if register_form.errors %}
+  <div class="alert alert-danger alert-dismissable fade show" role="alert">
+    <div class="d-flex">
+      There was an error with your registration! Please try again. 
+      <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label"Close"></button>
+    </div>
+  </div>
+{% endif %}
+
+<div class="shadow p-4 mb-5 bg-body rounded">
+  <h1>Register a New User</h1>
+  <br>
+  <form class="form-with-validation" action="/users/register/" method="post">
+    {% csrf_token %}
+    {{ register_form.as_p }}
+    
+    <button type="submit" class="btn btn-primary form-submit">Submit</button>
+  </form>
+</div>
+{% endblock %}
