@@ -1,18 +1,18 @@
-fd🏕️ Summer Camp Registration System - Starter Guide
+# 🏕️ Summer Camp Registration System - Starter Guide
 
 Welcome! This project is a Django-based web app for managing summer camp registrations.
 
 ----------------------------------------
-QUICK START INSTRUCTIONS
+## QUICK START INSTRUCTIONS
 ----------------------------------------
 
-1. Clone the Repository
--------------------------
+### 1. Clone the Repository
+```
 git clone https://github.com/TrentenPodach/summercampsystemCSCI450.git
 cd summercampsystemCSCI450
+```
 
-2. Set Up the Project
--------------------------
+### 2. Set Up the Project
 
 If you are on Windows:
 - Run the file: winmake.bat
@@ -25,8 +25,7 @@ If you are on Mac/Linux:
   make setup
   make run
 
-3. Open the Application
--------------------------
+### 3. Open the Application
 - Admin Panel: http://127.0.0.1:8000/admin/
 - Registration Page: http://127.0.0.1:8000/register/
 
@@ -35,7 +34,7 @@ Default Admin Login:
 - Password: 1234
 
 ----------------------------------------
-COMANDS
+## COMANDS
 ----------------------------------------
 
 | Task                     | Windows Command     | Mac/Linux Command  |
@@ -46,7 +45,7 @@ COMANDS
 | Delete virtual environment| winmake.bat → 4      | make clean         |
 
 ----------------------------------------
-NOTES
+## NOTES
 ----------------------------------------
 
 - If you install new Python packages, update the requirements.txt by using the Freeze option.
