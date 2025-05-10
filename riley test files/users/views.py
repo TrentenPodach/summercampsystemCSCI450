@@ -142,7 +142,7 @@ def promote_next_waitlisted_family(camp):
                 else:
                     children_list += f", " + child.first_name
             send_mail(
-                "Regent Summer Camp Registration Confirmation",
+                "Regent Summer Camp Waitlist Update",
                 f"Hello {family.primary_contact.first_name},\n\n"
                 f"Space has opened up and {children_list} have been moved from the waitlist and registered for {camp.name} "
                 f"running from {camp.start_date} to {camp.end_date}.\n"
