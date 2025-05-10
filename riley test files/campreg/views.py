@@ -116,18 +116,28 @@ def register(request):
                 
                 
                 send_mail("Regent Summer Camp Registration Confirmation",f"Hello {family.primary_contact.first_name},\n\nYour application for {children_list} to participate in {selected_camp.name} running from {selected_camp.start_date} to {selected_camp.end_date} has been approved.\nFor more information, visit 127.0.0.1:8000/home", settings.EMAIL_HOST_USER,[user_email])
+                request.session['last_registered_camp'] = selected_camp.name
+                request.session['was_waitlisted'] = False
+
                 for c in children_check:
                     if c.email:
                         send_mail("Regent Summer Camp Registration Confirmation",f"Hello {c.first_name},\n\nYour registration for {selected_camp.name} running from {selected_camp.start_date} to {selected_camp.end_date} has been confirmed. \nFor more information, visit 127.0.0.1:8000/home", settings.EMAIL_HOST_USER,[c.email])
+
             else:
                 existing_wait = WaitingList.objects.filter(family=family, camp=selected_camp).first()
+                request.session['last_registered_camp'] = selected_camp.name
+                request.session['was_waitlisted'] = True
+
                 if not existing_wait:
                     WaitingList.objects.create(family=family, camp=selected_camp)
                     print(f"{family} added to waitlist for {selected_camp.name}")
                     send_mail("Regent Summer Camp Waitlist",f"Hello {family.primary_contact.first_name},\n\n{selected_camp.name} running from {selected_camp.start_date} to {selected_camp.end_date} is full.\n\nYour application has been processed, and {children_list} have been added to the waitlist. If space becomes available for you, you will be registered automatically and an email will be sent to inform you. \nFor more information, visit 127.0.0.1:8000/home", settings.EMAIL_HOST_USER,[user_email])
+                    request.session['last_registered_camp'] = selected_camp.name
+                    request.session['was_waitlisted'] = True
+
                 else:
                     print(f"{family} already on waitlist for {selected_camp.name}")
-
+            
             return redirect('registration_success')
 
         else:

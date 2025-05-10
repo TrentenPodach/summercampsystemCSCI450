@@ -1,6 +1,12 @@
 {% extends 'layout.html' %}
 
-{% block title %}Registration Successful{% endblock %}
+<h1 class="mb-3">
+  {% if was_waitlisted %}
+    Waitlist Submission Complete!
+  {% else %}
+    Registration Complete!
+  {% endif %}
+</h1>
 
 {% block content %}
 <div class="shadow p-4 mb-5 bg-body rounded text-center">
