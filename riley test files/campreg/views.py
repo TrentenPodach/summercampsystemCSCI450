@@ -86,6 +86,13 @@ def register(request):
 
                 child_index += 1
 
+            # Ensure at least one child is being registered
+            total_children = family.members.exclude(id=family.primary_contact.id).count()
+
+            if total_children < 1:
+                messages.error(request, "You must register at least one child to continue.")
+                return redirect('register')
+
             current_total = sum(
                 f.members.exclude(id=f.primary_contact.id).count()
                 for f in selected_camp.registered_families.all()
