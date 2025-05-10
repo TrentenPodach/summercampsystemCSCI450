@@ -18,10 +18,11 @@ def home(request):
             f.members.exclude(id=f.primary_contact.id).count()
             for f in camp.registered_families.all()
         )
-        camp.waitlist_count = WaitingList.objects.filter(camp=camp).count()
-
+        camp.waitlist_count = sum(
+        entry.family.members.exclude(id=entry.family.primary_contact.id).count()
+        for entry in WaitingList.objects.filter(camp=camp)
+    )
     return render(request, 'campreg/home.html', {'camps': camps})
-
 
 @login_required(login_url="/users/login/")
 def register(request):
